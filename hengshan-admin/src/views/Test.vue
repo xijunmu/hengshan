@@ -1,13 +1,21 @@
 <template>
     <h1>test</h1>
-    <h1>pinia 方式:{{ store.aa }}</h1>
-    <h1> vuex 方式:{{ vueStore.state.count}}</h1>
+    <el-button type="primary" @click="store.increment">pinia方式</el-button>
+    <h2>pinia方式:{{ store.count }}</h2>
+    <el-button type="primary" @click="vuexStore.commit('increment')">vuex 方式</el-button>
+    <h2>vuex 方式:{{ vuexStore.state.count }}</h2>
 </template>
 <script lang="ts" setup>
-import { testStore } from '../store/test'
+import { sidebarStore } from '@/store/sidebar'
 import { useStore } from 'vuex'
-const store = testStore()
-const vueStore = useStore()
+
+const store = sidebarStore()
+const vuexStore = useStore()
+
 </script>
-<style scoped>
+<style lang="scss" scoped>
+// @import '@/styles/variables.scss';
+h1 {
+    color: $color;
+}
 </style>

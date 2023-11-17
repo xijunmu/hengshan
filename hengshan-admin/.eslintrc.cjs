@@ -25,6 +25,11 @@ module.exports = {
   plugins: ['vue'],
   rules: {
     'vue/multi-word-component-names': 'off',
-    'eol-last': 0
+    'eol-last': 0,
+    indent: ['off', 2],
+    '@typescript-eslint/promise-function-async': 'off',
+    '@typescript-eslint/explicit-function-return-type': 'off',
+    '@typescript-eslint/consistent-type-imports': 'off',
+    '@typescript-eslint/strict-boolean-expressions': 'off'
   }
 }
