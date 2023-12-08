@@ -2,7 +2,6 @@ package com.hengshan.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.hengshan.entity.User;
 
 public interface UserService extends IService<User> {
 

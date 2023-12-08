@@ -1,10 +1,10 @@
-package com.hengshan.service;
+package com.hengshan.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.hengshan.entity.User;
+import com.hengshan.entity.vo.LoginUser;
 import com.hengshan.exception.LoginException;
-import com.hengshan.mapper.MenuMapper;
 import com.hengshan.mapper.UserMapper;
-import com.hengshan.vo.LoginUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -21,18 +21,18 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private UserMapper userMapper;
 
-    @Autowired
-    private MenuMapper menuMapper;
+    // @Autowired
+    // private MenuMapper menuMapper;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(User::getName, username);
+        queryWrapper.eq(User::getUsername, username);
         User user = userMapper.selectOne(queryWrapper);
         if (Objects.isNull(user)) {
-            throw new LoginException("用户不存在");
+            throw new RuntimeException("用户名和密码错误！");
         }
-        List<String> permissions = menuMapper.selectPermissionByUserId(user.getId());
-        return new LoginUser(user,permissions);
+        // List<String> permissions = menuMapper.selectPermissionByUserId(user.getId());
+        return new LoginUser(user,null);
     }
 }

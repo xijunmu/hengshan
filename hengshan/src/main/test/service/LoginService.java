@@ -6,7 +6,6 @@ import com.hengshan.common.ResultBody;
 import com.hengshan.common.utils.AESUtil;
 import com.hengshan.common.utils.JWTUtil;
 import com.hengshan.common.utils.RedisUtil;
-import com.hengshan.entity.User;
 import com.hengshan.exception.LoginException;
 import com.hengshan.intercept.LoginIntercept;
 import com.hengshan.mapper.UserMapper;

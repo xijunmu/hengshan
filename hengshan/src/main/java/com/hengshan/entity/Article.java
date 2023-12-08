@@ -1,9 +1,9 @@
 package com.hengshan.entity;
 
 import java.util.Date;
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableName;
+
+import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,53 +21,56 @@ import lombok.NoArgsConstructor;
 public class Article {
 
     //ID
-    private Integer id;   
+    @TableId(value = "id", type = IdType.AUTO)
+    private Integer id;
 
     //标题
-    private String title;   
+    private String title;
 
     //内容
-    private String content;   
+    private String content;
 
     //摘要
-    private String summary;   
+    private String summary;
 
     //所属分类id
-    private Integer categoryId;   
+    private Integer categoryId;
 
     //缩略图
-    private String thumbnail;   
+    private String thumbnail;
 
     //访问量
-    private Integer viewCount;   
+    private Integer viewCount;
 
     //评论数
-    private Integer commentCount;   
+    private Integer commentCount;
 
     //是否置顶：0否 1是
-    private String isTop;   
+    private String isTop;
 
     //状态：0草稿 1已发布
-    private String status;   
+    private String status;
 
     //是否允许评论：0否 1是
-    private String isComment;   
+    private String isComment;
 
     //删除标志：0正常 1删除
-    private String delFlag;   
+    private String delFlag;
 
     //创建文章用户
-    private Integer createBy;   
+    private Integer createBy;
 
     //更新文章用户
-    private Integer updateBy;   
+    private Integer updateBy;
 
     //创建时间
     @TableField(fill = FieldFill.INSERT)
-    private Date createTime;   
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date createTime;
 
     //更新时间
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @TableField(fill = FieldFill.INSERT_UPDATE)
-    private Date updateTime;   
+    private Date updateTime;
 }
 

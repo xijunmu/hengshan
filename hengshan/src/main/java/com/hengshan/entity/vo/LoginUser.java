@@ -1,6 +1,10 @@
-package com.hengshan.vo;
+package com.hengshan.entity.vo;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.hengshan.entity.User;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,6 +13,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class LoginUser implements UserDetails {
 
@@ -17,9 +24,6 @@ public class LoginUser implements UserDetails {
     private List<String> permissions;
 
     private List<SimpleGrantedAuthority> authorities;
-
-    public LoginUser() {
-    }
 
     public LoginUser(User user,List<String> permissions) {
         this.user = user;
@@ -42,7 +46,7 @@ public class LoginUser implements UserDetails {
 
     @Override
     public String getUsername() {
-        return user.getName();
+        return user.getUsername();
     }
 
     @Override
@@ -64,24 +68,5 @@ public class LoginUser implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public List<String> getPermissions() {
-        return permissions;
-    }
-
-    public void setPermissions(List<String> permissions) {
-        this.permissions = permissions;
-    }
-
-    public void setAuthorities(List<SimpleGrantedAuthority> authorities) {
-        this.authorities = authorities;
-    }
 }
+
