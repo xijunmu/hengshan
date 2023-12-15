@@ -58,10 +58,7 @@ public class Article {
     private String delFlag;
 
     //创建文章用户
-    private Integer createBy;
-
-    //更新文章用户
-    private Integer updateBy;
+    private Long userId;
 
     //创建时间
     @TableField(fill = FieldFill.INSERT)

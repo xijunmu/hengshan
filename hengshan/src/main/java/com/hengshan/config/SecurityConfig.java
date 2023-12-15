@@ -1,24 +1,37 @@
 package com.hengshan.config;
 
 import com.hengshan.filter.JwtAuthenticationFilter;
+import com.hengshan.handler.MyAccessDeniedHandler;
+import com.hengshan.handler.MyAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import javax.annotation.Resource;
+
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     // 认证过滤器
-    @Autowired
+    @Resource
     private JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    // 认证失败处理器
+    @Autowired
+    private MyAuthenticationEntryPoint authenticationEntryPoint;
+
+    // 授权失败处理器
+    @Autowired
+    private MyAccessDeniedHandler accessDeniedHandler;
 
     // 注入AuthenticationManager进行用户认证
     @Bean
@@ -60,24 +73,30 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // 请求认证配置
                 .authorizeRequests()
                 // 允许匿名访问：未登录可以访问
-                .antMatchers("/login").anonymous()
-                .antMatchers("/*.html", "/**/*.html", "/**/*.css", "/**/*.js").permitAll()
-                // .antMatchers("/login").permitAll()// 登录或未登录都能访问
+                .antMatchers("/login","/login/**").anonymous()
+                // 登录或未登录都能访问
+                // .antMatchers("/*.html", "/**/*.html", "/**/*.css", "/**/*.js").permitAll()
+                // 需要登录后访问
+                .antMatchers("/broLink/getLinkList").authenticated()
+                // 需要指定权限访问
                 // .antMatchers("/textMybatis").hasAuthority("system:dept:list22")
                 // 任意用户，认证之后才可以访问（除上面外的）
                 .anyRequest().permitAll();
-
+        // 关闭spring security默认的logout
+        http.logout().disable();
         // 添加token过滤器
-        // http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         // 配置认证失败和授权失败异常处理器
-        // http.exceptionHandling().authenticationEntryPoint(authenticationEntryPoint).accessDeniedHandler(accessDeniedHandler);
+        http.exceptionHandling().authenticationEntryPoint(authenticationEntryPoint).accessDeniedHandler(accessDeniedHandler);
     }
 
-    //@Bean
-    //public WebSecurityCustomizer webSecurityCustomizer() {
-    //    return (web) -> web.ignoring().antMatchers("/ignore1", "/ignore2");
-    //}
+    /**
+     * 配置过滤器放行的接口
+     */
+    // @Bean
+    // public WebSecurityCustomizer webSecurityCustomizer() {
+    //     return (web) -> web.ignoring().mvcMatchers();
+    // }
 
 
     public static void main(String[] args) {

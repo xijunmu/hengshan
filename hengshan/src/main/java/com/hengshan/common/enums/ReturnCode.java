@@ -2,12 +2,12 @@ package com.hengshan.common.enums;
 
 public enum ReturnCode {
     SUCCESS(200,"成功"),
-    ACCESS_DENIED(401,"非法访问"),
-    NO_OPERATOR_AUTH(403,"无访问权限"),
     REQUEST_ERROR(400,"请求错误"),
+    AUTH_ERROR(401,"认证失败"),
+    ACCESS_DENIED(403,"无访问权限"),
     SYSTEM_ERROR(500,"服务异常"),
 
-    INVALID_TOKEN(1001,"访问令牌不合法"),
+    INVALID_TOKEN(1001,"访问令牌过期或无效"),
     LOGIN_ERROR(1002,"用户名或密码错误"),
     USERNAME_EXIST(1003,"用户名已存在"),
     PHONENUMBER_EXIST(1004,"手机号已存在"),

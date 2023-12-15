@@ -24,6 +24,9 @@ public class UserInfoVo {
     //邮箱
     private String email;
 
+    //性别：0女 1男
+    private String sex;
+
     //手机号码
     private String phone;
 

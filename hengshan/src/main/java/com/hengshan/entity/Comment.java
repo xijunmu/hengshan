@@ -1,54 +1,51 @@
 package com.hengshan.entity;
 
+import java.util.Date;
+
 import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
-
 /**
- * 用户表(User)表实体类
+ * 评论表(Comment)表实体类
  *
  * @author muxijun
- * @since 2023-12-07 18:41:31
+ * @since 2023-12-12 14:38:46
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@TableName("user")
-public class User {
+@TableName("comment")
+public class Comment {
 
-    //ID
+    //评论id
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    //用户名
-    private String username;
+    //文章id
+    private Integer articleId;
 
-    //密码
-    private String password;
-
-    //头像
-    private String avatar;
-
-    //邮箱
-    private String email;
-
-    //性别：0女 1男
-    private String sex;
-
-    //手机号码
-    private String phone;
-
-    //用户类型：0普通用户 1管理员
+    //类型：1文章 2友链
     private String type;
 
-    //帐号状态：0停用 1正常
-    private String status;
+    //根评论id
+    private Long rootId;
 
-    //创建时间
+    //被回复的评论id
+    private Long replyId;
+
+    //评论内容
+    private String content;
+
+    //被回复的用户id
+    private Long replyUserId;
+
+    //当前评论用户id
+    private Long userId;
+
+    //评论时间
     @TableField(fill = FieldFill.INSERT)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;

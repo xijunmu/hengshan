@@ -32,11 +32,12 @@ public class LoginUser implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (authorities!=null) {
-            return authorities;
-        }
-        authorities = permissions.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
-        return authorities;
+        // if (authorities!=null) {
+        //     return authorities;
+        // }
+        // authorities = permissions.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+        // return authorities;
+        return null;
     }
 
     @Override

@@ -17,8 +17,7 @@ public class LoginController {
 
     @RequestMapping("/login")
     public JSONObject login(@RequestBody User user) {
-        JSONObject resp = loginService.login(user);
-        return resp;
+        return loginService.login(user);
     }
 
     @RequestMapping("/logout")
