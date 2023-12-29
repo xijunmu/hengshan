@@ -11,7 +11,7 @@ create table if not exists user (
  `sex` char(1) comment '性别：0女 1男',
  `phone` varchar(11) comment '手机号码',
  `type` char(1) default '0' comment '用户类型：0普通用户 1管理员',
- `status` char(1) default '1' comment '帐号状态：0停用 1正常',
+ `status` char(1) default '1' comment '账号状态：0停用 1正常',
  `create_time` datetime comment '创建时间',
  `update_time` datetime comment '更新时间',
  primary key (id)
@@ -22,6 +22,8 @@ create table if not exists role (
  `id` int not null auto_increment comment 'ID',
  `name` varchar(255) comment '角色名称',
  `description` varchar(255) comment '描述',
+ `order_num` int(4) comment '显示顺序',
+ `status` char(1) default '1' comment '角色状态：0停用 1正常',
  `create_time` datetime comment '创建时间',
  `update_time` datetime comment '更新时间',
  primary key (id)
@@ -29,56 +31,126 @@ create table if not exists role (
 
 -- 权限表
 create table if not exists menu (
- `id` int comment 'ID',
- `name` varchar(255) not null comment '权限名',
- `parent_id` int default '0' comment '父级ID',
- `url` varchar(255) default '#' comment '访问路径或接口',
- `order` int comment '排序',
- `type` char(1) default '1' comment '权限类型：1菜单 2按钮',
+ `id` int not null auto_increment comment 'ID',
+ `name` varchar(255) comment '菜单名称',
+ `type` char(1) default 'b' comment '权限类型：c顶级目录 m子菜单 b按钮',
+ `parent_id` int default 0 comment '父级ID：为0时且type为M则是一级菜单',
+ `order_num` int(4) comment '显示顺序',
+ `visible` char(1) default '1' comment '菜单显示状态：0隐藏 1显示',
+ `status` char(1) default '1' comment '菜单状态：0停用 1正常',
+ `is_frame` char(1) default '0' comment '是否为外链：0否 1是',
+ `icon` varchar(255) comment '菜单图标',
+ `component` varchar(255) comment '菜单组件',
+ `perms` varchar(255) comment '权限标识',
+ `path` varchar(255) default '#' comment '路由地址',
+ `create_time` datetime comment '创建时间',
+ `update_time` datetime comment '更新时间',
  primary key (id)
 ) engine=innodb comment = '权限表';
 
 -- 用户角色表
 create table if not exists user_role (
- `user_id` int not null comment '用户ID',
- `role_id` int not null comment '角色ID'
+ `user_id` bigint not null comment '用户ID',
+ `role_id` int not null comment '角色ID',
+ primary key (user_id,role_id)
 ) engine=innodb comment = '用户角色表';
 
 -- 角色权限表
 create table if not exists role_menu (
  `role_id` int not null comment '角色ID',
- `menu_id` int not null comment '权限ID'
+ `menu_id` int not null comment '权限ID',
+ primary key (role_id,menu_id)
 ) engine=innodb comment = '角色权限表';
 
--- 初始化 用户-角色-权限 数据
-insert into user values(1, 'admin', '123','https://img2.woyaogexing.com/2023/12/04/252170494265e17853195349efbf99a9.jpg','12345678@qq.com', 1,'15888888888', 1,1, sysdate(), null);
-insert into user values(2, 'test', '123', 'https://img2.woyaogexing.com/2022/11/07/81617bf06d5295a0!400x400.jpg','12345678@qq.com', 0, '15666666666', 0, 1,sysdate(), null);
-insert into user values(3, 'guest', '123', 'https://img2.woyaogexing.com/2022/01/27/181386851e34466498c787838acc17d1!400x400.jpeg','12345678@qq.com',1, '15699999999', 0, 1,sysdate(), null);
-insert into role values(1, '超级管理员', '全部权限', sysdate(), null);
-insert into role values(2, '普通用户', '部分权限', sysdate(), null);
+-- 初始化 用户-角色-权限 数据 初始密码123
+insert into user values(1, 'admin','$2a$10$QTqpBpvCMCGccFsJuZ5J7eUu/OPpXKujhQYxJmmkEsnTVNXTYpPAa', 'https://img2.woyaogexing.com/2023/12/04/252170494265e17853195349efbf99a9.jpg','12345678@qq.com', 1,'15888888888', 1,1, sysdate(), null);
+insert into user values(2, 'test', '$2a$10$QTqpBpvCMCGccFsJuZ5J7eUu/OPpXKujhQYxJmmkEsnTVNXTYpPAa', 'https://img2.woyaogexing.com/2022/11/07/81617bf06d5295a0!400x400.jpg','12345678@qq.com', 0, '15666666666', 0, 1,sysdate(), null);
+insert into user values(3, 'guest','$2a$10$QTqpBpvCMCGccFsJuZ5J7eUu/OPpXKujhQYxJmmkEsnTVNXTYpPAa', 'https://img2.woyaogexing.com/2022/01/27/181386851e34466498c787838acc17d1!400x400.jpeg','12345678@qq.com',1, '15699999999', 0, 1,sysdate(), null);
+insert into role values(1, '管理员',  '全部权限', 1, '1', sysdate(), sysdate());
+insert into role values(2, '普通用户','部分权限', 2, '1', sysdate(), sysdate());
 insert into user_role values(1, 1);
 insert into user_role values(2, 2);
-insert into menu values(1, '系统管理', 0, '#', 1, '1');
-insert into menu values(2, '系统监控', 0, '#', 2, '1');
-insert into menu values(3, '系统工具', 0, '#', 3, '1');
-insert into menu values(100, '用户管理', 1, '#', 1, '1');
-insert into menu values(101, '角色管理', 1, '#', 2, '1');
-insert into menu values(102, '菜单管理', 1, '#', 3, '1');
-insert into menu values(200, '服务监控', 2, '#', 1, '1');
-insert into menu values(201, '系统监控', 2, '#', 2, '1');
-insert into role_menu values(1, 1);
-insert into role_menu values(1, 2);
-insert into role_menu values(1, 3);
-insert into role_menu values(1, 100);
-insert into role_menu values(1, 101);
-insert into role_menu values(1, 102);
-insert into role_menu values(1, 200);
-insert into role_menu values(1, 201);
-insert into role_menu values(2, 1);
-insert into role_menu values(2, 2);
-insert into role_menu values(2, 100);
-insert into role_menu values(2, 101);
-insert into role_menu values(2, 102);
+insert into user_role values(3, 2);
+insert into menu values (1,    '系统管理', 'c', 0,   1, 1, 1, 0, 'system',   'system',  'system',               '#',                      sysdate(), sysdate());
+insert into menu values (2,    '博客管理', 'c', 0,   2, 1, 1, 0, 'content',  'content', 'content',              '#',                      sysdate(), sysdate());
+insert into menu values (3,    '内容管理', 'c', 0,   3, 1, 1, 0, 'other',    'other',   'other',                '#',                      sysdate(), sysdate());
+insert into menu values (100,  '用户管理', 'm', 1,   1, 1, 1, 0, 'user',     'user',    'system:user:list',     'system/user/index',      sysdate(), sysdate());
+insert into menu values (101,  '角色管理', 'm', 1,   2, 1, 1, 0, 'role',     'role',    'system:role:list',     'system/role/index',      sysdate(), sysdate());
+insert into menu values (102,  '菜单管理', 'm', 1,   3, 1, 1, 0, 'menu',     'menu',    'system:menu:list',     'system/menu/index',      sysdate(), sysdate());
+insert into menu values (200,  '分类管理', 'm', 2,   1, 1, 1, 0, 'category', 'category','content:category:list','content/category/index', sysdate(), sysdate());
+insert into menu values (201,  '文章管理', 'm', 2,   2, 1, 1, 0, 'article',  'article', 'content:article:list', 'content/article/index',  sysdate(), sysdate());
+insert into menu values (202,  '标签管理', 'm', 2,   3, 1, 1, 0, 'tag',      'tag',     'content:tag:list',     'content/tag/index',      sysdate(), sysdate());
+insert into menu values (203,  '友链管理', 'm', 2,   4, 1, 1, 0, 'link',     'link',    'content:link:list',    'content/link/index',     sysdate(), sysdate());
+insert into menu values (1001, '用户查询', 'b', 100, 1, 1, 1, 0, null,       null,      'system:user:query',    '#', sysdate(), sysdate());
+insert into menu values (1002, '用户新增', 'b', 100, 2, 1, 1, 0, null,       null,      'system:user:add',      '#', sysdate(), sysdate());
+insert into menu values (1003, '用户修改', 'b', 100, 3, 1, 1, 0, null,       null,      'system:user:edit',     '#', sysdate(), sysdate());
+insert into menu values (1004, '用户删除', 'b', 100, 4, 1, 1, 0, null,       null,      'system:user:remove',   '#', sysdate(), sysdate());
+insert into menu values (1005, '用户导出', 'b', 100, 5, 1, 1, 0, null,       null,      'system:user:export',   '#', sysdate(), sysdate());
+insert into menu values (1006, '用户导入', 'b', 100, 6, 1, 1, 0, null,       null,      'system:user:import',   '#', sysdate(), sysdate());
+insert into menu values (1007, '重置密码', 'b', 100, 7, 1, 1, 0, null,       null,      'system:user:resetpwd', '#', sysdate(), sysdate());
+insert into menu values (1008, '角色查询', 'b', 101, 1, 1, 1, 0, null,       null,      'system:role:query',    '#', sysdate(), sysdate());
+insert into menu values (1009, '角色新增', 'b', 101, 2, 1, 1, 0, null,       null,      'system:role:add',      '#', sysdate(), sysdate());
+insert into menu values (1010, '角色修改', 'b', 101, 3, 1, 1, 0, null,       null,      'system:role:edit',     '#', sysdate(), sysdate());
+insert into menu values (1011, '角色删除', 'b', 101, 4, 1, 1, 0, null,       null,      'system:role:remove',   '#', sysdate(), sysdate());
+insert into menu values (1012, '角色导出', 'b', 101, 5, 1, 1, 0, null,       null,      'system:role:export',   '#', sysdate(), sysdate());
+insert into menu values (1013, '菜单查询', 'b', 102, 1, 1, 1, 0, null,       null,      'system:menu:query',    '#', sysdate(), sysdate());
+insert into menu values (1014, '菜单新增', 'b', 102, 2, 1, 1, 0, null,       null,      'system:menu:add',      '#', sysdate(), sysdate());
+insert into menu values (1015, '菜单修改', 'b', 102, 3, 1, 1, 0, null,       null,      'system:menu:edit',     '#', sysdate(), sysdate());
+insert into menu values (1016, '菜单删除', 'b', 102, 4, 1, 1, 0, null,       null,      'system:menu:remove',   '#', sysdate(), sysdate());
+insert into menu values (2001, '友链新增', 'b', 203, 1, 1, 1, 0, null,       null,      'content:link:add',     '#', sysdate(), sysdate());
+insert into menu values (2002, '友链修改', 'b', 203, 2, 1, 1, 0, null,       null,      'content:link:edit',    '#', sysdate(), sysdate());
+insert into menu values (2003, '友链删除', 'b', 203, 3, 1, 1, 0, null,       null,      'content:link:remove',  '#', sysdate(), sysdate());
+insert into menu values (2004, '友链查询', 'b', 203, 4, 1, 1, 0, null,       null,      'content:link:query',   '#', sysdate(), sysdate());
+insert into role_menu values (1,1);
+insert into role_menu values (1,2);
+insert into role_menu values (1,3);
+insert into role_menu values (1,100);
+insert into role_menu values (1,101);
+insert into role_menu values (1,102);
+insert into role_menu values (1,200);
+insert into role_menu values (1,201);
+insert into role_menu values (1,202);
+insert into role_menu values (1,203);
+insert into role_menu values (1,1001);
+insert into role_menu values (1,1002);
+insert into role_menu values (1,1003);
+insert into role_menu values (1,1004);
+insert into role_menu values (1,1005);
+insert into role_menu values (1,1006);
+insert into role_menu values (1,1007);
+insert into role_menu values (1,1008);
+insert into role_menu values (1,1009);
+insert into role_menu values (1,1010);
+insert into role_menu values (1,1011);
+insert into role_menu values (1,1012);
+insert into role_menu values (1,1013);
+insert into role_menu values (1,1014);
+insert into role_menu values (1,1015);
+insert into role_menu values (1,1016);
+insert into role_menu values (1,2001);
+insert into role_menu values (1,2002);
+insert into role_menu values (1,2003);
+insert into role_menu values (1,2004);
+insert into role_menu values (2,1);
+insert into role_menu values (2,2);
+insert into role_menu values (2,100);
+insert into role_menu values (2,101);
+insert into role_menu values (2,102);
+insert into role_menu values (2,200);
+insert into role_menu values (2,201);
+insert into role_menu values (2,202);
+insert into role_menu values (2,203);
+insert into role_menu values (2,1001);
+insert into role_menu values (2,1002);
+insert into role_menu values (2,1003);
+insert into role_menu values (2,1004);
+insert into role_menu values (2,1005);
+insert into role_menu values (2,1006);
+insert into role_menu values (2,1007);
+insert into role_menu values (2,2001);
+insert into role_menu values (2,2002);
+insert into role_menu values (2,2003);
+insert into role_menu values (2,2004);
 
 -- 文章表
 create table if not exists article (
@@ -118,7 +190,7 @@ insert into category values(3,'vue','后端框架',sysdate(),sysdate());
 -- 友链表
 create table if not exists bro_link(
  `id` int not null auto_increment comment 'ID',
- `name` varchar(128) comment '名称',
+ `name` varchar(128) comment '友链名称',
  `description` varchar(512) comment '描述',
  `url` varchar(128) comment '地址',
  `logo` varchar(512) comment 'logo',

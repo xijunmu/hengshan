@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * 用户表(User)表实体类
@@ -45,7 +46,7 @@ public class User {
     //用户类型：0普通用户 1管理员
     private String type;
 
-    //帐号状态：0停用 1正常
+    //账号状态：0停用 1正常
     private String status;
 
     //创建时间
@@ -57,5 +58,8 @@ public class User {
     @TableField(fill = FieldFill.INSERT_UPDATE)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;
+
+    @TableField(exist=false)
+    private List<Integer> roles;
 }
 

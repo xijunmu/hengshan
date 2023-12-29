@@ -61,24 +61,24 @@ public class ResultBody {
 
     public static ResultBody success(Object data) {
         ResultBody body = new ResultBody(ReturnCode.SUCCESS.getCode(), ReturnCode.SUCCESS.getMessage());
-        if(data!=null){
+        if (data != null) {
             body.setData(data);
         }
         return body;
     }
 
     public static ResultBody fail(int code, String message) {
-        ResultBody body = new ResultBody(code,message);
+        ResultBody body = new ResultBody(code, message);
         return body;
     }
 
     public static ResultBody fail(ReturnCode returnCode) {
-        ResultBody body = new ResultBody(returnCode.getCode(),returnCode.getMessage());
+        ResultBody body = new ResultBody(returnCode.getCode(), returnCode.getMessage());
         return body;
     }
 
     public static ResultBody fail(ReturnCode returnCode, String message) {
-        ResultBody body = new ResultBody(returnCode.getCode(),message);
+        ResultBody body = new ResultBody(returnCode.getCode(), message);
         return body;
     }
 }

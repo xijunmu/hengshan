@@ -10,7 +10,6 @@ import com.hengshan.entity.User;
 import com.hengshan.entity.vo.LoginUser;
 import com.hengshan.entity.vo.UserInfoVo;
 import com.hengshan.exception.SystemException;
-import com.hengshan.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,9 +20,6 @@ import org.springframework.util.StringUtils;
 
 @Service
 public class LoginService {
-
-    @Autowired
-    private UserMapper userMapper;
 
     @Autowired
     private RedisUtil redisUtil;

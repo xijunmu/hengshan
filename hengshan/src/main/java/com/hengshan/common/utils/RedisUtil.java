@@ -1,9 +1,12 @@
 package com.hengshan.common.utils;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -18,7 +21,6 @@ public class RedisUtil {
      *
      * @param key  键
      * @param time 时间(秒)
-     * @return
      */
     public boolean expire(String key, long time) {
         try {
@@ -34,7 +36,7 @@ public class RedisUtil {
      * 根据key 获取过期时间
      *
      * @param key 键 不能为null
-     * @return 时间(秒) 返回0代表为永久有效
+     * @return 时间(秒) 返回0 代表为永久有效
      */
     public long getExpire(String key) {
         return redisTemplate.getExpire(key, TimeUnit.SECONDS);
@@ -124,4 +126,55 @@ public class RedisUtil {
         Set<String> set = redisTemplate.keys(key + "*");
         return redisTemplate.delete(set);
     }
+
+    /**
+     * 往Hash中存入数据
+     *
+     * @param key   Redis键
+     * @param hKey  Hash键
+     * @param value 值
+     */
+    public <T> void setMapValue(final String key, final String hKey, final T value) {
+        redisTemplate.opsForHash().put(key, hKey, value);
+    }
+
+    /**
+     * 获取Hash中的数据
+     *
+     * @param key  Redis键
+     * @param hKey Hash键
+     * @return Hash中的对象
+     */
+    public <T> T getMapValue(final String key, final String hKey) {
+        HashOperations<String, String, T> opsForHash = redisTemplate.opsForHash();
+        return opsForHash.get(key, hKey);
+    }
+
+
+    public void incrementMapValue(String key, String hKey, int v) {
+        redisTemplate.opsForHash().increment(key, hKey, v);
+    }
+
+    /**
+     * 删除Hash中的数据
+     *
+     * @param key Redis键
+     * @param hKey Hash键
+     */
+    public void delMapValue(final String key, final String hKey) {
+        HashOperations hashOperations = redisTemplate.opsForHash();
+        hashOperations.delete(key, hKey);
+    }
+
+    /**
+     * 获取Hash中的多个数据
+     *
+     * @param key   Redis键
+     * @param hKeys Hash键集合
+     * @return Hash对象集合
+     */
+    public List<Object> getMultiMapValue(final String key, final Collection<Object> hKeys) {
+        return redisTemplate.opsForHash().multiGet(key, hKeys);
+    }
+
 }

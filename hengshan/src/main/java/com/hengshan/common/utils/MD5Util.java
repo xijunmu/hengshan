@@ -31,15 +31,14 @@ public class MD5Util {
             ca[i] = (char) (ca[i] + salt);
         }
         String target = new String(ca);
-        String md5 = DigestUtils.md5DigestAsHex(target.getBytes(StandardCharsets.UTF_8));
-        return md5;
+        return DigestUtils.md5DigestAsHex(target.getBytes(StandardCharsets.UTF_8));
     }
 
     public static void main(String[] args) throws Exception {
         String origin = "hello word";
         String encrypt = MD5Util.md5Digest(origin);
-        String encrypt1 = MD5Util.md5Digest(origin,111);
-        String encrypt2 = MD5Util.md5Digest(origin,222);
+        String encrypt1 = MD5Util.md5Digest(origin, 111);
+        String encrypt2 = MD5Util.md5Digest(origin, 222);
         System.out.println(encrypt);
         System.out.println(encrypt1);
         System.out.println(encrypt2);

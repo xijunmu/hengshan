@@ -11,12 +11,5 @@ import com.hengshan.entity.BroLink;
  */
 public interface BroLinkService extends IService<BroLink> {
 
-    /**
-     * 根据ids删除多条数据
-     *
-     * @param ids id列表
-     */
-    void deleteByIds(String ids);
-
 }
 

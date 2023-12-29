@@ -1,12 +1,9 @@
 package com.hengshan.controller;
 
 
-import com.hengshan.common.ResultBody;
 import com.hengshan.entity.BroLink;
-import com.hengshan.service.BroLinkService;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.hengshan.service.impl.BroLinkServiceImpl;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -23,32 +20,37 @@ import java.util.Map;
 public class BroLinkController {
 
     @Resource
-    private BroLinkService broLinkService;
+    private BroLinkServiceImpl broLinkService;
 
-    @RequestMapping("/getLinkList")
-    public List<BroLink> getLinkList() {
-        return broLinkService.list();
+    @PostMapping("/getList")
+    public List<BroLink> getList() {
+        return broLinkService.getList();
     }
 
-    @RequestMapping("/deleteLinkById")
-    public ResultBody deleteLinkById(@RequestBody Map<String,Object> map) {
-        int id = 0;
-        if(map.get("id") != null) {
-            id = (int)map.get("id");
-        }
-        boolean result = broLinkService.removeById(id);
-        if(result){
-            return ResultBody.success("删除成功");
-        } else {
-            return ResultBody.fail(500,"删除失败");
-        }
+    @GetMapping("getById/{id}")
+    public BroLink getById(@PathVariable("id") Integer id) {
+        return broLinkService.getOneById(id);
     }
 
-    @RequestMapping("/addLink")
-    public BroLink addLink(@RequestBody BroLink broLink) {
-        broLinkService.saveOrUpdate(broLink);
-        return broLink;
+    @PostMapping("/delete")
+    public boolean delete(@RequestBody Map<String, Object> map) {
+        List<Integer> ids = (List<Integer>) map.get("id");
+        return broLinkService.deleteByIds(ids);
     }
 
+    @GetMapping("/deleteById/{id}")
+    public boolean deleteById(@PathVariable("id") Integer id) {
+        return broLinkService.deleteById(id);
+    }
+
+    @PostMapping("/add")
+    public BroLink add(@RequestBody BroLink broLink) {
+        return broLinkService.add(broLink);
+    }
+
+    @PostMapping("/update")
+    public BroLink updateById(@RequestBody BroLink broLink) {
+        return broLinkService.update(broLink);
+    }
 }
 

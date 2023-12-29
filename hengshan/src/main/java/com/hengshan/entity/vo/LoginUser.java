@@ -1,5 +1,6 @@
 package com.hengshan.entity.vo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.hengshan.entity.User;
 import lombok.AllArgsConstructor;
@@ -21,8 +22,11 @@ public class LoginUser implements UserDetails {
 
     private User user;
 
+    //储存权限信息
     private List<String> permissions;
 
+    //储存SpringSecurity需要的权限信息。往redis储存时，不对该属性序列化
+    @JsonIgnore
     private List<SimpleGrantedAuthority> authorities;
 
     public LoginUser(User user,List<String> permissions) {
@@ -32,12 +36,12 @@ public class LoginUser implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // if (authorities!=null) {
-        //     return authorities;
-        // }
-        // authorities = permissions.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
-        // return authorities;
-        return null;
+        if (authorities!=null) {
+            return authorities;
+        }
+        //把permissions中的字符串权限信息转换成GrantedAuthority对象存入authorities
+        authorities = permissions.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+        return authorities;
     }
 
     @Override

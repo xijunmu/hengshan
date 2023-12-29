@@ -2,23 +2,23 @@ package com.hengshan.config;
 
 import com.hengshan.filter.JwtAuthenticationFilter;
 import com.hengshan.handler.MyAccessDeniedHandler;
-import com.hengshan.handler.MyAuthenticationEntryPoint;
+import com.hengshan.handler.MyAuthenticationHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.annotation.Resource;
 
 @Configuration
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     // 认证过滤器
@@ -27,7 +27,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     // 认证失败处理器
     @Autowired
-    private MyAuthenticationEntryPoint authenticationEntryPoint;
+    private MyAuthenticationHandler authenticationHandler;
 
     // 授权失败处理器
     @Autowired
@@ -49,8 +49,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public PasswordEncoder passwordEncoder() {
         // 不使用加密方案，明文存储
-        return NoOpPasswordEncoder.getInstance();
-        // return new BCryptPasswordEncoder();
+        // return NoOpPasswordEncoder.getInstance();
+        return new BCryptPasswordEncoder();
     }
 
     /**
@@ -73,7 +73,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // 请求认证配置
                 .authorizeRequests()
                 // 允许匿名访问：未登录可以访问
-                .antMatchers("/login","/login/**").anonymous()
+                .antMatchers("/login", "/login/**").anonymous()
                 // 登录或未登录都能访问
                 // .antMatchers("/*.html", "/**/*.html", "/**/*.css", "/**/*.js").permitAll()
                 // 需要登录后访问
@@ -87,7 +87,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // 添加token过滤器
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         // 配置认证失败和授权失败异常处理器
-        http.exceptionHandling().authenticationEntryPoint(authenticationEntryPoint).accessDeniedHandler(accessDeniedHandler);
+        http.exceptionHandling().authenticationEntryPoint(authenticationHandler).accessDeniedHandler(accessDeniedHandler);
     }
 
     /**
@@ -97,8 +97,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     // public WebSecurityCustomizer webSecurityCustomizer() {
     //     return (web) -> web.ignoring().mvcMatchers();
     // }
-
-
     public static void main(String[] args) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         String encod1 = encoder.encode("123");

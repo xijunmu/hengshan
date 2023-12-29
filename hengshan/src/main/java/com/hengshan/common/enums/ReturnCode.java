@@ -14,10 +14,13 @@ public enum ReturnCode {
     EMAIL_EXIST(1005, "邮箱已存在"),
     REQUIRE_USERNAME(2001, "必需填写用户名"),
     CONTENT_NOT_NULL(2002, "评论内容不能为空"),
-    FILE_TYPE_ERROR(2003, "文件类型错误，请上传png文件"),
+    FILE_TYPE_ERROR(2003, "文件类型错误，请上传正确格式的文件"),
     USERNAME_NOT_NULL(2004, "用户名不能为空"),
     PASSWORD_NOT_NULL(2006, "密码不能为空"),
-    EMAIL_NOT_NULL(2007, "邮箱不能为空");
+    EMAIL_NOT_NULL(2007, "邮箱不能为空"),
+    ROLE_EXIST(3001,"角色名已存在"),
+    MENU_EXIST(3002,"角色名已存在"),
+    NAME_EXIST(3003,"名称已存在");
 
     private final int code;
     private final String message;

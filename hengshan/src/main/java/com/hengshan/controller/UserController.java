@@ -1,14 +1,22 @@
 package com.hengshan.controller;
 
 
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.fastjson2.JSON;
+import com.hengshan.common.annotation.SystemLog;
+import com.hengshan.common.enums.ReturnCode;
 import com.hengshan.common.utils.BeanCopyUtil;
+import com.hengshan.common.utils.WebUtil;
 import com.hengshan.entity.User;
+import com.hengshan.entity.vo.ExcelUserVo;
 import com.hengshan.entity.vo.PageVo;
 import com.hengshan.entity.vo.UserInfoVo;
-import com.hengshan.service.UserService;
+import com.hengshan.service.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -24,42 +32,57 @@ import java.util.Objects;
 public class UserController {
 
     @Autowired
-    private UserService userService;
+    private UserServiceImpl userService;
 
-    @PostMapping("/add")
+    @PostMapping({"/add", "/register"})
     public UserInfoVo add(@RequestBody User user) {
-        userService.save(user);
-        return BeanCopyUtil.copyBean(user, UserInfoVo.class);
+        return userService.add(user);
     }
 
     @PostMapping("/update")
-    public UserInfoVo updateById(@RequestBody User user){
-        //使用updateById更新时，前端不要传时间参数，数据库时间会被unix初始时间覆盖掉
-        userService.updateById(user);
-        User tempUser = userService.getById(user.getId());
-        return BeanCopyUtil.copyBean(tempUser, UserInfoVo.class);
+    public UserInfoVo updateById(@RequestBody User user) {
+        return userService.update(user);
     }
 
     @PostMapping("/delete")
-    public void delete(@RequestBody Map<String,Object> map){
-        List<Long> ids = (List) map.get("id");
-        userService.removeByIds(ids);
+    public boolean delete(@RequestBody Map<String, Object> map) {
+        List<Long> ids = (List<Long>) map.get("id");
+        return userService.removeByIds(ids);
     }
 
-    @RequestMapping("/getUserList")
-    public PageVo<UserInfoVo> getUserList(@RequestBody Map<String,Object> map) {
-        int pageNum = (int)map.get("pageNum");
-        int pageSize = (int)map.get("pageSize");
+    @GetMapping("/deleteById/{id}")
+    public boolean deleteById(@PathVariable("id") Long id) {
+        return userService.removeById(id);
+    }
+
+    @PostMapping("/getList")
+    public PageVo<UserInfoVo> getList(@RequestBody Map<String, Object> map) {
+        int pageNum = (int) map.get("pageNum");
+        int pageSize = (int) map.get("pageSize");
         String username = "";
-        if(Objects.nonNull(map.get("username"))) {
+        if (Objects.nonNull(map.get("username"))) {
             username = map.get("username").toString().trim();
         }
-        return userService.getList(pageNum,pageSize,username);
+        return userService.getList(pageNum, pageSize, username);
     }
 
-    @GetMapping("getUserById/{id}")
-    public UserInfoVo selectOne(@PathVariable("id") Long id) {
-        return userService.getUserById(id);
+    @SystemLog(businessName = "获取用户信息")
+    @GetMapping("getById/{id}")
+    public UserInfoVo getById(@PathVariable("id") Long id) {
+        return userService.getOneById(id);
+    }
+
+    @PreAuthorize("@permission.hasPermission('system:user:export')")
+    @GetMapping("/export")
+    public void export(HttpServletResponse response) {
+        try {
+            WebUtil.setDownLoadHeader("用户列表.xlsx", response);
+            List<ExcelUserVo> excelUserVos = BeanCopyUtil.copyBeanList(userService.list(), ExcelUserVo.class);
+            EasyExcel.write(response.getOutputStream(), ExcelUserVo.class).autoCloseStream(Boolean.FALSE).sheet().doWrite(excelUserVos);
+        } catch (Exception e) {
+            e.printStackTrace();
+            WebUtil.renderString(response, JSON.toJSONString(ReturnCode.SYSTEM_ERROR));
+        }
     }
 }
 

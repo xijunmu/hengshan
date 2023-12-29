@@ -1,6 +1,5 @@
 package com.hengshan.common.utils;
 
-import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.util.StringUtils;
 
 import javax.crypto.Cipher;
@@ -88,17 +87,17 @@ public class AESUtil {
     }
 
     public static String byte2hex(byte[] b) {
-        String hs = "";
-        String stmp = "";
+        StringBuilder hs = new StringBuilder();
+        String stmp;
         for (byte value : b) {
             stmp = (Integer.toHexString(value & 0XFF));
             if (stmp.length() == 1) {
-                hs = hs + "0" + stmp;
+                hs.append("0").append(stmp);
             } else {
-                hs = hs + stmp;
+                hs.append(stmp);
             }
         }
-        return hs.toUpperCase();
+        return hs.toString().toUpperCase();
     }
 
     public static void main(String[] args) throws Exception {

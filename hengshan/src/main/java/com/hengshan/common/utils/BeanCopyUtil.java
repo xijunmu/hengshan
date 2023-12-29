@@ -20,7 +20,7 @@ public class BeanCopyUtil {
         return result;
     }
 
-    public static <V,T> List<T> copyBeanList(List<V> list, Class<T> clazz) {
+    public static <V, T> List<T> copyBeanList(List<V> list, Class<T> clazz) {
         return list.stream().map(obj -> copyBean(obj, clazz)).collect(Collectors.toList());
     }
 

@@ -55,12 +55,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             WebUtil.renderString(response, JSON.toJSONString(result));
             return;
         }
-        String userId = claims.getSubject();;
+        String userId = claims.getSubject();
+        ;
         LoginUser loginUser = (LoginUser) redisUtil.get("hengshan:login:" + userId);
         if (Objects.isNull(loginUser)) {
             ResultBody result = ResultBody.fail(ReturnCode.INVALID_TOKEN);
             WebUtil.renderString(response, JSON.toJSONString(result));
-            log.error("exception={}","redis中用户不存在");
+            log.error("exception={}", "redis中用户不存在");
             return;
         }
         // 将用户信息存入 SecurityContextHolder ，以便本次在请求中使用

@@ -2,18 +2,16 @@ package com.hengshan.service.impl;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.hengshan.entity.Article;
-import com.hengshan.mapper.CategoryMapper;
+import com.hengshan.common.enums.ReturnCode;
 import com.hengshan.entity.Category;
+import com.hengshan.exception.SystemException;
+import com.hengshan.mapper.CategoryMapper;
 import com.hengshan.service.CategoryService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * 文章分类表(Category)表服务实现类
@@ -24,23 +22,37 @@ import java.util.stream.Stream;
 @Service("categoryService")
 public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> implements CategoryService {
 
-    @Resource
-    private CategoryMapper categoryMapper;
-
-    @Override
-    public void deleteByIds(String ids) {
-        String[] idsArr = ids.split(",");
-        if (idsArr.length > 0) {
-            List<Long> idList = Stream.of(idsArr).map(Long::valueOf).collect(Collectors.toList());
-            categoryMapper.deleteBatchIds(idList);
-        }
+    @Transactional
+    public boolean deleteByIds(List<Integer> ids) {
+        return removeBatchByIds(ids);
     }
 
-    @Override
+    public boolean deleteById(Integer id) {
+        return removeById(id);
+    }
+
     public List<Category> getList() {
-        LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
-        List<Category> list = categoryMapper.selectList(queryWrapper);
-        return list;
+        return list();
     }
+
+    public Category getOneById(Integer id) {
+        return getById(id);
+    }
+
+    public Category add(Category category) {
+        LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Category::getName, category.getName());
+        if (count(queryWrapper) > 0) {
+            throw new SystemException(ReturnCode.NAME_EXIST);
+        }
+        save(category);
+        return category;
+    }
+
+    public Category update(Category category) {
+        updateById(category);
+        return category;
+    }
+
 }
 

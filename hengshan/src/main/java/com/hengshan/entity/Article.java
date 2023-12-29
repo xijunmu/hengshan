@@ -1,12 +1,12 @@
 package com.hengshan.entity;
 
-import java.util.Date;
-
 import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.Date;
 
 /**
  * 文章表(Article)表实体类
@@ -69,5 +69,10 @@ public class Article {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private Date updateTime;
+
+    public Article(Integer id, Integer viewCount) {
+        this.id = id;
+        this.viewCount = viewCount;
+    }
 }
 

@@ -8,27 +8,19 @@ import com.hengshan.common.ResultBody;
 import com.hengshan.common.enums.ReturnCode;
 import com.hengshan.common.utils.BeanCopyUtil;
 import com.hengshan.common.utils.SecurityUtils;
-import com.hengshan.entity.Article;
-import com.hengshan.entity.Category;
-import com.hengshan.entity.User;
-import com.hengshan.entity.vo.ArticleVo;
+import com.hengshan.entity.Comment;
 import com.hengshan.entity.vo.CommentVo;
 import com.hengshan.entity.vo.PageVo;
 import com.hengshan.exception.SystemException;
 import com.hengshan.mapper.CommentMapper;
-import com.hengshan.entity.Comment;
 import com.hengshan.mapper.UserMapper;
 import com.hengshan.service.CommentService;
-import com.hengshan.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import javax.annotation.Resource;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * 评论表(Comment)表服务实现类
@@ -39,31 +31,23 @@ import java.util.stream.Stream;
 @Service("commentService")
 public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> implements CommentService {
 
-    @Resource
-    private CommentMapper commentMapper;
-
     @Autowired
     private UserMapper userMapper;
 
-    /**
-     * 根据ids删除多条数据
-     *
-     * @param ids id列表
-     */
-    @Override
-    public void deleteByIds(String ids) {
-        String[] idsArr = ids.split(",");
-        if (idsArr.length > 0) {
-            List<Long> idList = Stream.of(idsArr).map(Long::valueOf).collect(Collectors.toList());
-            commentMapper.deleteBatchIds(idList);
-        }
+    @Transactional
+    public boolean deleteByIds(List<Long> ids) {
+        return removeBatchByIds(ids);
+    }
+
+    public boolean deleteById(Long id) {
+        return removeById(id);
     }
 
     @Override
     public PageVo<CommentVo> getList(int pageNum, int pageSize, int type, int articleId) {
         LambdaQueryWrapper<Comment> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(type==1, Comment::getArticleId, articleId);
-        queryWrapper.eq(type!=1, Comment::getType, type);
+        queryWrapper.eq(type == 1, Comment::getArticleId, articleId);
+        queryWrapper.eq(type != 1, Comment::getType, type);
         queryWrapper.isNull(Comment::getRootId);
         queryWrapper.orderByAsc(Comment::getCreateTime);
         Page<Comment> page = new Page<>(pageNum, pageSize);
@@ -78,8 +62,17 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         return pageVo;
     }
 
-    @Override
-    public ResultBody addComment(Comment comment) {
+
+    public Comment getOneById(Long id) {
+        return getById(id);
+    }
+
+    public Comment update(Comment comment) {
+        updateById(comment);
+        return comment;
+    }
+
+    public ResultBody add(Comment comment) {
         if (StringUtils.isEmpty(comment.getUserId())) {
             comment.setUserId(SecurityUtils.getUserId());
         }

@@ -18,13 +18,6 @@ import java.util.List;
 public interface ArticleService extends IService<Article> {
 
     /**
-     * 根据ids删除多条数据
-     *
-     * @param ids id列表
-     */
-    void deleteByIds(String ids);
-
-    /**
      * 热门文章
      *
      * @return 热门文章列表
@@ -47,6 +40,13 @@ public interface ArticleService extends IService<Article> {
      * @param id 文章id
      * @return 文章详情
      */
-    ArticleDetailVo getArticleById(Integer id);
+    ArticleDetailVo getOneById(Integer id);
+
+    /**
+     * 更新文章浏览量
+     *
+     * @param id 文章id
+     */
+    void updateViewCount(Integer id);
 }
 

@@ -69,7 +69,7 @@ public class JWTUtil {
     /**
      * 解析jwt
      *
-     * @param jwt
+     * @param jwt token信息
      */
     public static Claims parseJWT(String jwt) {
         SecretKey secretKey = generalKey();
